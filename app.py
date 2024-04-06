@@ -4,11 +4,12 @@ import string
 from nltk.corpus import stopwords
 import nltk
 from nltk.stem.porter import PorterStemmer
-
+from flask_cors import CORS
+import os
 app = Flask(__name__)
 
 ps = PorterStemmer()
-
+CORS(app)
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -53,4 +54,5 @@ def predict():
     return jsonify({'result': prediction})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)

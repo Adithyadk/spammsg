@@ -5,13 +5,15 @@ from nltk.corpus import stopwords
 import nltk
 from nltk.stem.porter import PorterStemmer
 from flask_cors import CORS
-#For env variables
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 ps = PorterStemmer()
-CORS(app)
+nltk.download('punkt')
+nltk.download('stopwords')
+
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -36,8 +38,12 @@ def transform_text(text):
 
     return " ".join(y)
 
-tfidf = pickle.load(open('vectorizer.pkl','rb'))
-model = pickle.load(open('model.pkl','rb'))
+# Load the model and vectorizer
+with open('vectorizer.pkl','rb') as f:
+    tfidf = pickle.load(f)
+
+with open('model.pkl','rb') as f:
+    model = pickle.load(f)
 
 @app.route('/')
 def home():
@@ -45,15 +51,18 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    input_sms = request.form['message']
-    transformed_sms = transform_text(input_sms)
-    vector_input = tfidf.transform([transformed_sms])
-    result = model.predict(vector_input)[0]
-    if result == 1:
-        prediction = "Spam"
-    else:
-        prediction = "Not Spam"
-    return jsonify({'result': prediction})
+    try:
+        input_sms = request.form['message']
+        transformed_sms = transform_text(input_sms)
+        vector_input = tfidf.transform([transformed_sms])
+        result = model.predict(vector_input)[0]
+        if result == 1:
+            prediction = "Spam"
+        else:
+            prediction = "Not Spam"
+        return jsonify({'result': prediction})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

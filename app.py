@@ -6,6 +6,7 @@ import nltk
 from nltk.stem.porter import PorterStemmer
 from flask_cors import CORS
 import os
+
 app = Flask(__name__)
 
 ps = PorterStemmer()

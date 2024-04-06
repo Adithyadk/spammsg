@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Spam Detector</title>
+    <style>
+        body {
+            text-align: center; /* Center align all text */
+            font-family: "Arial", sans-serif; /* Specify a font family */
+            background-color: #f0f0f0; /* Soft tone of grey background */
+            margin: 0; /* Reset default margin */
+            padding: 20px; /* Add padding around the content */
+            padding-bottom: 20%;
+            border: 2px solid red; /* Add red border around the entire webpage */
+            box-sizing: border-box; /* Include border in the total width and height */
+        }
+        h1 {
+            font-family: "Arial", sans-serif; /* Specify a font family for the heading */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); /* Add text shadow to soften edges */
+        }
+        form {
+            display: inline-block; /* Make form elements inline */
+            text-align: left; /* Align form elements to the left within the container */
+        }
+        #message {
+            width: 750px; /* Adjust width to cover the entire center part */
+            height: 200px; /* Adjust height as needed */
+            margin-bottom: 10px; /* Add margin below the textarea */
+            border: 1px solid #ccc; /* Add border to the textarea */
+            padding: 5px; /* Add padding to the textarea */
+            font-size: 14px; /* Adjust font size as needed */
+            font-family: "Arial", sans-serif; /* Specify a font family */
+            resize: vertical; /* Allow vertical resizing */
+        }
+        label {
+            font-family: "Arial", sans-serif; /* Specify a font family for the label */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); /* Add text shadow to soften edges */
+        }
+        button[type="submit"] {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text color */
+            padding: 10px 20px; /* Add padding */
+            border: none; /* Remove border */
+            cursor: pointer; /* Add cursor on hover */
+            border-radius: 5px; /* Add border radius */
+            font-size: 16px; /* Adjust font size as needed */
+            font-family: "Arial", sans-serif; /* Specify a font family */
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        .spam, .not-spam {
+            padding: 10px 20px; /* Add padding */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Add border radius */
+            font-size: 28px; /* Adjust font size as needed */
+            font-family: "Arial", sans-serif; /* Specify a font family */
+            display: inline-block; /* Display inline */
+            margin-right: 10px; /* Add margin between containers */
+            border-radius: 5px; /* Add border radius */
+            background-color: rgb(236, 233, 233); /* Grey background color */
+        }
+
+        .spam {
+            color: red; /* Red text color */
+        }
+
+        .not-spam {
+            color: green; /* Green text color */
+        }
+    </style>
+</head>
+<body>
+    <h1>SMS Spam Detector</h1>
+    <form id="smsForm">
+        <label for="message" style="font-family: Arial, sans-serif; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);">Enter the message:</label><br>
+        <textarea id="message" name="message" placeholder="Type your message here..." onkeydown="if(event.keyCode==13){event.preventDefault(); predict();}"></textarea><br>
+        <button type="submit" onclick="predict()">Predict</button>
+    </form>
+    <div id="resultContainer" class="result-container"></div>
+
+    <script>
+        document.getElementById("smsForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var form = event.target;
+            var formData = new FormData(form);
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var resultContainer = document.getElementById("resultContainer");
+                resultContainer.innerHTML = ''; // Clear previous content
+                if (data.result === "Spam") {
+                    resultContainer.innerHTML = '<div class="spam">Spam</div>';
+                } else {
+                    resultContainer.innerHTML = '<div class="not-spam">Not Spam</div>';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

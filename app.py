@@ -5,6 +5,7 @@ from nltk.corpus import stopwords
 import nltk
 from nltk.stem.porter import PorterStemmer
 from flask_cors import CORS
+#For env variables
 import os
 
 app = Flask(__name__)

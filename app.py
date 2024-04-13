@@ -64,6 +64,16 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)})
 
+@app.route('/predictMobile', methods=['POST'])
+def predict_mobile():
+    data = request.get_json(force=True)
+    input_sms = data["message"]
+    transformed_sms = transform_text(input_sms)
+    vector_input = tfidf.transform([transformed_sms])
+    result = model.predict(vector_input)[0]
+    prediction = "Spam" if result == 1 else "Not Spam"
+    return jsonify({'result':prediction})
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
